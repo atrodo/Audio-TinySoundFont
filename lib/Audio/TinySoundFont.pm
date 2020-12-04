@@ -4,6 +4,8 @@ use strict;
 use 5.008_005;
 our $VERSION = '0.01';
 
+use base 'Audio::TinySoundFont::XS';
+
 1;
 __END__
 
