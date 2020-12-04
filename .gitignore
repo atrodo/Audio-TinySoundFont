@@ -1,0 +1,13 @@
+/Audio-TinySoundFont-*
+Makefile
+pm_to_blib
+MYMETA.*
+!META.json
+/.prove
+/local*
+/blib/
+tmp*
+*.sw[po]
+TinySoundFont.bs
+TinySoundFont.c
+TinySoundFont.o
