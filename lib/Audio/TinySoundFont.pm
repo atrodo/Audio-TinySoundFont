@@ -1,10 +1,13 @@
 package Audio::TinySoundFont;
 
-use strict;
-use 5.008_005;
+use v5.14;
+use warnings;
 our $VERSION = '0.01';
 
-use base 'Audio::TinySoundFont::XS';
+require XSLoader;
+XSLoader::load( 'Audio::TinySoundFont', $VERSION );
+
+use parent qw/Exporter/;
 
 1;
 __END__

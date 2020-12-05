@@ -6,5 +6,5 @@
 #define TSF_IMPLEMENTATION
 #include "TinySoundFont/tsf.h"
 
-MODULE = Audio::TinySoundFont  PACKAGE = Audio::TinySoundFont::XS
+MODULE = Audio::TinySoundFont  PACKAGE = Audio::TinySoundFont
 
