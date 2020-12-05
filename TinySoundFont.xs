@@ -4,7 +4,7 @@
 #include "XSUB.h"
 
 #define TSF_IMPLEMENTATION
-#include "tsf.h"
+#include "TinySoundFont/tsf.h"
 
 MODULE = Audio::TinySoundFont  PACKAGE = Audio::TinySoundFont::XS
 
