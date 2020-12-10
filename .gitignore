@@ -1,4 +1,5 @@
 /Audio-TinySoundFont-*
+.build
 Makefile
 pm_to_blib
 MYMETA.*
