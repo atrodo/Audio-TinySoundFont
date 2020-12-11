@@ -63,6 +63,13 @@ is_active(self)
     RETVAL
 
 void
+set_volume(self, global_gain);
+    Audio::TinySoundFont::XS self
+    float global_gain
+  CODE:
+    tsf_set_volume(self, global_gain);
+
+void
 note_on(self, preset_idx, note, velocity)
     Audio::TinySoundFont::XS self
     int preset_idx

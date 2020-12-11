@@ -8,7 +8,7 @@ use autodie;
 use Carp;
 use Try::Tiny;
 use Moo;
-use Types::Standard qw/ArrayRef HashRef GlobRef Str Int Bool InstanceOf/;
+use Types::Standard qw/ArrayRef HashRef GlobRef Str Int Num InstanceOf/;
 
 use Audio::TinySoundFont::XS;
 use Audio::TinySoundFont::Preset;
@@ -17,6 +17,13 @@ has _tsf => (
   is       => 'ro',
   isa      => InstanceOf ['Audio::TinySoundFont::XS'],
   required => 1,
+);
+
+has volume => (
+  is  => 'rw',
+  isa => Num,
+  default => -10,
+  trigger => sub { my $self = shift; $self->_tsf->set_volume(shift) },
 );
 
 has preset_count => (
@@ -50,6 +57,7 @@ sub BUILDARGS
   carp "Cannot load soundfont file, unknown ref: " . ref($file)
       if !defined $build_fn;
   my $tsf = $build_fn->($file);
+  $tsf->set_volume(-10);
 
   $args->{_tsf} = $tsf;
 
@@ -79,7 +87,7 @@ sub _build_presets
       $n = "_$conflict";
     }
     $name = "$name$n";
-    $result{$name} = Audio::TinySoundFont::Preset->new( _tsf => $self->_tsf,
+    $result{$name} = Audio::TinySoundFont::Preset->new( soundfont => $self,
       index => $i );
   }
 

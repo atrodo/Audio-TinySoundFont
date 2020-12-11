@@ -10,9 +10,9 @@ use Try::Tiny;
 use Moo;
 use Types::Standard qw/Int Str InstanceOf/;
 
-has _tsf => (
+has soundfont => (
   is       => 'ro',
-  isa      => InstanceOf ['Audio::TinySoundFont::XS'],
+  isa      => InstanceOf ['Audio::TinySoundFont'],
   required => 1,
 );
 
@@ -25,9 +25,10 @@ has index => (
 has name => (
   is      => 'ro',
   isa     => Str,
+  lazy => 1,
   builder => sub {
     my $self = shift;
-    $self->_tsf->get_presetname( $self->index ) // '';
+    $self->soundfont->_tsf->get_presetname( $self->index ) // '';
   },
 );
 
@@ -36,7 +37,7 @@ sub render
   my $self = shift;
   my %args = @_;
 
-  my $tsf = $self->_tsf;
+  my $tsf = $self->soundfont->_tsf;
 
   die "Cannot render a preset when TinySoundFont is active"
       if $tsf->is_active;
@@ -46,6 +47,27 @@ sub render
   my $samples = ( $seconds * $SR ) || $args{samples} // $SR;
   my $note    = $args{note} // 60;
   my $vel     = $args{vel} // 0.5;
+  my $vol     = $args{volume};
+
+  if ( !defined $vol )
+  {
+    # Volume is in dB, amp is a float, 0.0-1.0, so adjust it to -80..10 range.
+    if (defined $args{amp})
+    {
+      my $amp
+          = $args{amp} > 1.0 ? 1.0
+          : $args{amp} < 0   ? 0
+          :                    $args{amp};
+      $vol = ($amp * 100) - 80;
+    }
+  }
+
+  my $old_vol;
+  if ( defined $vol )
+  {
+    $old_vol = $self->soundfont->volume;
+    $self->soundfont->volume($vol);
+  }
 
   if ( $vel < 0 || $vel > 1 )
   {
@@ -54,9 +76,7 @@ sub render
     $vel /= 127;
   }
 
-  warn $samples;
   $tsf->note_on( $self->index, $note, $vel );
-  $DB::single = 1;
   my $result = $tsf->render($samples);
 
   #use Devel::Peek;
@@ -64,12 +84,14 @@ sub render
   my $cleanup_samples = 512;
   for ( 1 .. 100 )
   {
-    warn length $result;
     last
         if !$tsf->is_active;
     $result .= $tsf->render($cleanup_samples);
   }
-  warn length $result;
+  if ( defined $old_vol )
+  {
+    $self->soundfont->volume($old_vol);
+  }
   return $result;
 }
 
