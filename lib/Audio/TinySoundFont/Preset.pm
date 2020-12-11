@@ -81,8 +81,8 @@ sub render
 
   #use Devel::Peek;
   $tsf->note_off( $self->index, $note );
-  my $cleanup_samples = 512;
-  for ( 1 .. 100 )
+  my $cleanup_samples = 4096;
+  for ( 1 .. 256 )
   {
     last
         if !$tsf->is_active;
