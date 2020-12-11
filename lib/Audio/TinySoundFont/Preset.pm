@@ -43,7 +43,7 @@ sub render
       if $tsf->is_active;
 
   my $SR      = $tsf->SAMPLE_RATE;
-  my $seconds = $args{seconds};
+  my $seconds = $args{seconds} // 0;
   my $samples = ( $seconds * $SR ) || $args{samples} // $SR;
   my $note    = $args{note} // 60;
   my $vel     = $args{vel} // 0.5;
