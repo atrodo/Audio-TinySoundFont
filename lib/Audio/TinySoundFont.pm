@@ -57,7 +57,7 @@ sub BUILDARGS
   carp "Cannot load soundfont file, unknown ref: " . ref($file)
       if !defined $build_fn;
   my $tsf = $build_fn->($file);
-  $tsf->set_volume(-10);
+  $args->{volume} = 0.3;
 
   $args->{_tsf} = $tsf;
 

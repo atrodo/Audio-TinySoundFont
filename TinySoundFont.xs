@@ -67,6 +67,9 @@ set_volume(self, global_gain);
     Audio::TinySoundFont::XS self
     float global_gain
   CODE:
+    global_gain = global_gain < 0 ? 0
+                : global_gain > 1 ? 1
+                : global_gain;
     tsf_set_volume(self, global_gain);
 
 void
