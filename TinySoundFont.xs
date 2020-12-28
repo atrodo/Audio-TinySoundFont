@@ -11,6 +11,16 @@ typedef tsf* Audio__TinySoundFont__XS;
 
 #define SAMPLE_RATE 44100
 
+static int atsf_perlio_read(PerlIO* f, void* ptr, unsigned int size)
+{
+  return (int)PerlIO_read(f, ptr, size);
+}
+
+static int atsf_perlio_skip(PerlIO* f, unsigned int count)
+{
+  return !PerlIO_seek(f, count, SEEK_CUR);
+}
+
 MODULE = Audio::TinySoundFont  PACKAGE = Audio::TinySoundFont::XS
 
 BOOT:
@@ -31,7 +41,26 @@ load_file(CLASS, filename)
     RETVAL = tsf_load_filename(filename);
     if ( RETVAL == NULL )
     {
-      croak("Unable to loadfile: %s\n", filename);
+      croak("Unable to load file: %s\n", filename);
+    }
+    tsf_set_output(RETVAL, TSF_MONO, SAMPLE_RATE, -10);
+  OUTPUT:
+    RETVAL
+
+Audio::TinySoundFont::XS
+load_fh(CLASS, fh)
+    SV *CLASS = NO_INIT
+    PerlIO* fh
+  CODE:
+    struct tsf_stream stream = {
+      fh,
+      (int(*)(void*,void*,unsigned int))&atsf_perlio_read,
+      (int(*)(void*,unsigned int))&atsf_perlio_skip
+    };
+    RETVAL = tsf_load(&stream);
+    if ( RETVAL == NULL )
+    {
+      croak("Unable to load: %s\n", fh);
     }
     tsf_set_output(RETVAL, TSF_MONO, SAMPLE_RATE, -10);
   OUTPUT:

@@ -43,7 +43,20 @@ my %ref_build = (
     carp qq{File "$file" doesn't exist}
         if !-e $file;
     return try { Audio::TinySoundFont::XS->load_file($file) }
-    catch { carp $_ };
+    catch { croak $_ };
+  },
+  SCALAR => sub
+  {
+    my $str = shift;
+    open my $glob, '<', $str;
+    return try { Audio::TinySoundFont::XS->load_fh($glob) }
+    catch { croak $_ };
+  },
+  GLOB => sub
+  {
+    my $fh = shift;
+    return try { Audio::TinySoundFont::XS->load_fh($fh) }
+    catch { croak $_ };
   },
 );
 
@@ -54,7 +67,7 @@ sub BUILDARGS
   my $args  = Moo::Object::BUILDARGS( $class, @_ );
 
   my $build_fn = $ref_build{ ref $file };
-  carp "Cannot load soundfont file, unknown ref: " . ref($file)
+  croak "Cannot load soundfont file, unknown ref: " . ref($file)
       if !defined $build_fn;
   my $tsf = $build_fn->($file);
   $args->{volume} = 0.3;
