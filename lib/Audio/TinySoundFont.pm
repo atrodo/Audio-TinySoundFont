@@ -138,6 +138,37 @@ sub note_on
   return;
 }
 
+sub note_off
+{
+  my $self   = shift;
+  my $preset = shift // croak "Preset is required for note_on";
+  my $note   = shift // 60;
+
+  if ( !blessed $preset )
+  {
+    $preset = $self->preset($preset);
+  }
+
+  ( InstanceOf ['Audio::TinySoundFont::Preset'] )->($preset);
+
+  $self->_tsf->note_off( $preset->index, $note );
+  return;
+}
+
+sub render
+{
+  my $self = shift;
+  my %args = @_;
+
+  my $tsf = $self->_tsf;
+
+  my $SR      = $tsf->SAMPLE_RATE;
+  my $seconds = $args{seconds} // 0;
+  my $samples = ( $seconds * $SR ) || $args{samples} // $SR;
+
+  return $tsf->render($samples);
+}
+
 sub active_voices
 {
   my $self = shift;
