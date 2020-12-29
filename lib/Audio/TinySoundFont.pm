@@ -120,6 +120,36 @@ sub preset
   return $preset;
 }
 
+sub note_on
+{
+  my $self   = shift;
+  my $preset = shift // croak "Preset is required for note_on";
+  my $note   = shift // 60;
+  my $vel    = shift // 0.5;
+
+  if ( !blessed $preset )
+  {
+    $preset = $self->preset($preset);
+  }
+
+  ( InstanceOf ['Audio::TinySoundFont::Preset'] )->($preset);
+
+  $self->_tsf->note_on( $preset->index, $note, $vel );
+  return;
+}
+
+sub active_voices
+{
+  my $self = shift;
+  return $self->_tsf->is_active;
+}
+
+sub is_active
+{
+  my $self = shift;
+  return !!$self->_tsf->is_active;
+}
+
 1;
 __END__
 
