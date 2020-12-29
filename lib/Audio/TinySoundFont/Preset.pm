@@ -39,7 +39,7 @@ sub render
 
   my $tsf = $self->soundfont->_tsf;
 
-  die "Cannot render a preset when TinySoundFont is active"
+  croak "Cannot render a preset when TinySoundFont is active"
       if $tsf->is_active;
 
   my $SR      = $tsf->SAMPLE_RATE;

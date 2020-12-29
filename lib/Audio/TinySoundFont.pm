@@ -114,7 +114,7 @@ sub preset
 
   my $preset = $self->presets->{$name};
 
-  die qq{Could not find preset "$name"}
+  croak qq{Could not find preset "$name"}
       if !defined $preset;
 
   return $preset;
