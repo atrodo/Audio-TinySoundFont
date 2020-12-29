@@ -84,7 +84,7 @@ get_presetname(self, preset_idx)
     RETVAL
 
 int
-is_active(self)
+active_voices(self)
     Audio::TinySoundFont::XS self
   CODE:
     RETVAL = tsf_active_voice_count(self);

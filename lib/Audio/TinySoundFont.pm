@@ -172,13 +172,13 @@ sub render
 sub active_voices
 {
   my $self = shift;
-  return $self->_tsf->is_active;
+  return $self->_tsf->active_voices;
 }
 
 sub is_active
 {
   my $self = shift;
-  return !!$self->_tsf->is_active;
+  return !!$self->_tsf->active_voices;
 }
 
 1;

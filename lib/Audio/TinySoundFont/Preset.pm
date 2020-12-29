@@ -40,7 +40,7 @@ sub render
   my $tsf = $self->soundfont->_tsf;
 
   croak "Cannot render a preset when TinySoundFont is active"
-      if $tsf->is_active;
+      if $tsf->active_voices;
 
   my $SR      = $tsf->SAMPLE_RATE;
   my $seconds = $args{seconds} // 0;
@@ -85,7 +85,7 @@ sub render
   for ( 1 .. 256 )
   {
     last
-        if !$tsf->is_active;
+        if !$tsf->active_voices;
     $result .= $tsf->render($cleanup_samples);
   }
   if ( defined $old_vol )
