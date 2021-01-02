@@ -120,6 +120,20 @@ sub preset
   return $preset;
 }
 
+sub preset_index
+{
+  my $self  = shift;
+  my $index = shift;
+
+  croak qq{Could not find preset "$index"}
+      if $index >= $self->preset_count;
+
+  return Audio::TinySoundFont::Preset->new(
+    soundfont => $self,
+    index     => $index,
+  );
+}
+
 sub note_on
 {
   my $self   = shift;
