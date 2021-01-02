@@ -49,17 +49,14 @@ sub render
   my $vel     = $args{vel} // 0.5;
   my $vol     = $args{volume};
 
-  if ( !defined $vol )
+  if ( !defined $vol && defined $args{db} )
   {
-    # Volume is in dB, amp is a float, 0.0-1.0, so adjust it to -80..10 range.
-    if (defined $args{amp})
-    {
-      my $amp
-          = $args{amp} > 1.0 ? 1.0
-          : $args{amp} < 0   ? 0
-          :                    $args{amp};
-      $vol = ($amp * 100) - 80;
-    }
+    # Volume is a float 0.0-1.0, db is in dB -100..0, so adjust it to a float
+    my $db
+        = $args{db} > 0    ? 0
+        : $args{db} < -100 ? -100
+        :                    $args{db};
+    $vol = 10**( $db / 20 );
   }
 
   my $old_vol;
@@ -69,18 +66,37 @@ sub render
     $self->soundfont->volume($vol);
   }
 
-  if ( $vel < 0 || $vel > 1 )
+  my $vel_msg = qq{Velocity of "$vel" should be between 0 and 1};
+  if ( $vel < 0 )
   {
-    carp
-        qq{Velocity of "$vel" should be between 1 and 0, adjusting to 0..127};
-    $vel /= 127;
+    carp qq{$vel_msg, setting to 0};
+    $vel = 0;
+  }
+
+  if ( $vel > 1 )
+  {
+    carp qq{$vel_msg, setting to 1};
+    $vel = 1;
+  }
+
+  my $note_msg = qq{Note "$note" should be between 0 and 127};
+  if ( $note < 0 )
+  {
+    carp qq{$note_msg, setting to 0};
+    $note = 0;
+  }
+
+  if ( $note > 127 )
+  {
+    carp qq{$note_msg, setting to 127};
+    $note = 127;
   }
 
   $tsf->note_on( $self->index, $note, $vel );
-  my $result = $tsf->render($samples);
 
-  #use Devel::Peek;
+  my $result = $tsf->render($samples);
   $tsf->note_off( $self->index, $note );
+
   my $cleanup_samples = 4096;
   for ( 1 .. 256 )
   {
@@ -88,6 +104,7 @@ sub render
         if !$tsf->active_voices;
     $result .= $tsf->render($cleanup_samples);
   }
+
   if ( defined $old_vol )
   {
     $self->soundfont->volume($old_vol);
