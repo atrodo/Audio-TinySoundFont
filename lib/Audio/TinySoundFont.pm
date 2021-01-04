@@ -7,6 +7,8 @@ our $VERSION = '0.01';
 use autodie;
 use Carp;
 use Try::Tiny;
+use Scalar::Util qw/blessed/;
+
 use Moo;
 use Types::Standard qw/ArrayRef HashRef GlobRef Str Int Num InstanceOf/;
 
@@ -20,9 +22,9 @@ has _tsf => (
 );
 
 has volume => (
-  is  => 'rw',
-  isa => Num,
-  default => -10,
+  is      => 'rw',
+  isa     => Num,
+  default => 0.3,
   trigger => sub { my $self = shift; $self->_tsf->set_volume(shift) },
 );
 
@@ -36,27 +38,27 @@ has presets => (
   isa => HashRef,
 );
 
+*SAMPLE_RATE = \&Audio::TinySoundFont::XS::SAMPLE_RATE;
+
+my $XS        = 'Audio::TinySoundFont::XS';
 my %ref_build = (
   '' => sub
   {
     my $file = shift;
-    carp qq{File "$file" doesn't exist}
+    croak qq{File "$file" doesn't exist}
         if !-e $file;
-    return try { Audio::TinySoundFont::XS->load_file($file) }
-    catch { croak $_ };
+    return try { $XS->load_file($file) } catch { croak $_ };
   },
   SCALAR => sub
   {
     my $str = shift;
     open my $glob, '<', $str;
-    return try { Audio::TinySoundFont::XS->load_fh($glob) }
-    catch { croak $_ };
+    return try { $XS->load_fh($glob) } catch { croak $_ };
   },
   GLOB => sub
   {
     my $fh = shift;
-    return try { Audio::TinySoundFont::XS->load_fh($fh) }
-    catch { croak $_ };
+    return try { $XS->load_fh($fh) } catch { croak $_ };
   },
 );
 
@@ -100,8 +102,10 @@ sub _build_presets
       $n = "_$conflict";
     }
     $name = "$name$n";
-    $result{$name} = Audio::TinySoundFont::Preset->new( soundfont => $self,
-      index => $i );
+    $result{$name} = Audio::TinySoundFont::Preset->new(
+      soundfont => $self,
+      index     => $i,
+    );
   }
 
   return \%result;
@@ -134,6 +138,18 @@ sub preset_index
   );
 }
 
+sub active_voices
+{
+  my $self = shift;
+  return $self->_tsf->active_voices;
+}
+
+sub is_active
+{
+  my $self = shift;
+  return !!$self->_tsf->active_voices;
+}
+
 sub note_on
 {
   my $self   = shift;
@@ -155,7 +171,7 @@ sub note_on
 sub note_off
 {
   my $self   = shift;
-  my $preset = shift // croak "Preset is required for note_on";
+  my $preset = shift // croak "Preset is required for note_off";
   my $note   = shift // 60;
 
   if ( !blessed $preset )
@@ -181,18 +197,6 @@ sub render
   my $samples = ( $seconds * $SR ) || $args{samples} // $SR;
 
   return $tsf->render($samples);
-}
-
-sub active_voices
-{
-  my $self = shift;
-  return $self->_tsf->active_voices;
-}
-
-sub is_active
-{
-  my $self = shift;
-  return !!$self->_tsf->active_voices;
 }
 
 1;
