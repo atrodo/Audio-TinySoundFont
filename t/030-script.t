@@ -43,40 +43,48 @@ use Try::Tiny;
     },
   );
 
+  my $script = $tsf->new_script([@script_a]);
+  is( scalar @{ $script->play_script }, 2,     'new with items did add items' );
+  isnt( $script->play_script->[0], $script_a[0], 'play_script[0] is not a ref to the original' );
+  isnt( $script->play_script->[1], $script_a[1], 'play_script[1] is not a ref to the original' );
+
+  $script = $tsf->new_script;
+  is( scalar @{ $script->play_script }, 0,     'new without items did not add items' );
+
   my $error;
-  try { $tsf->set_script( [] ) } catch { $error = $_ };
+  try { $script->set_script( [] ) } catch { $error = $_ };
   is( $error,                        undef, 'set_script with empty script without error' );
-  is( scalar @{ $tsf->play_script }, 0,     'set_script did not add items' );
+  is( scalar @{ $script->play_script }, 0,     'set_script did not add items' );
 
-  try { $tsf->set_script( [@script_a] ) } catch { $error = $_ };
+  try { $script->set_script( [@script_a] ) } catch { $error = $_ };
   is( $error,                        undef, 'set_script with simple script without error' );
-  is( scalar @{ $tsf->play_script }, 2,     'set_script did not add items' );
+  is( scalar @{ $script->play_script }, 2,     'set_script did not add items' );
 
-  try { $tsf->add_script( [@script_b] ) } catch { $error = $_ };
+  try { $script->add_script( [@script_b] ) } catch { $error = $_ };
   is( $error,                        undef, 'add_script with simple script without error' );
-  is( scalar @{ $tsf->play_script }, 4,     'add_script added items' );
+  is( scalar @{ $script->play_script }, 4,     'add_script added items' );
 
-  isnt( $tsf->play_script->[0], $script_a[0], 'play_script[0] is not a ref to the original' );
-  isnt( $tsf->play_script->[1], $script_a[1], 'play_script[1] is not a ref to the original' );
-  isnt( $tsf->play_script->[2], $script_a[2], 'play_script[2] is not a ref to the original' );
-  isnt( $tsf->play_script->[3], $script_a[3], 'play_script[3] is not a ref to the original' );
+  isnt( $script->play_script->[0], $script_a[0], 'play_script[0] is not a ref to the original' );
+  isnt( $script->play_script->[1], $script_a[1], 'play_script[1] is not a ref to the original' );
+  isnt( $script->play_script->[2], $script_a[2], 'play_script[2] is not a ref to the original' );
+  isnt( $script->play_script->[3], $script_a[3], 'play_script[3] is not a ref to the original' );
 
-  try { $tsf->clear_script } catch { $error = $_ };
+  try { $script->clear_script } catch { $error = $_ };
   is( $error,                        undef, 'clear_script with simple script without error' );
-  is( scalar @{ $tsf->play_script }, 0,     'clear_script cleared items' );
+  is( scalar @{ $script->play_script }, 0,     'clear_script cleared items' );
 
-  $tsf->add_script( [@script_a] );
-  $tsf->add_script( [@script_b] );
-  $tsf->add_script( [@script_c] );
-  is( scalar @{ $tsf->play_script }, 5, 'add_script added items' );
+  $script->add_script( [@script_a] );
+  $script->add_script( [@script_b] );
+  $script->add_script( [@script_c] );
+  is( scalar @{ $script->play_script }, 5, 'add_script added items' );
 
-  my $all_snd = $tsf->render_script;
-  is( scalar @{ $tsf->play_script }, 5, 'render_script did not remove items' );
+  my $all_snd = $script->render_script;
+  is( scalar @{ $script->play_script }, 5, 'render_script did not remove items' );
   is( $tsf->active_voices,           0, 'render_script ends with no active voices' );
 
-  $tsf->clear_script;
-  $tsf->add_script( [@script_c] );
-  my $c_snd = $tsf->render_script;
+  $script->clear_script;
+  $script->add_script( [@script_c] );
+  my $c_snd = $script->render_script;
 
   is( length $all_snd, length $c_snd, 'Using the last script item only produces an identical length' );
 }
@@ -84,16 +92,16 @@ use Try::Tiny;
 # Check script errors
 {
   my $tsf = Audio::TinySoundFont->new("$Bin/tiny.sf2");
-  $tsf->add_script( [ { preset => '' } ] );
+  my $script = $tsf->new_script( [ { preset => '' } ] );
   $tsf->note_on('');
   my $error;
-  my $snd = try { $tsf->render_script } catch { $error = $_; undef };
+  my $snd = try { $script->render_script } catch { $error = $_; undef };
   is( $snd, undef, 'A render_script when there are active voices fails' );
   like( $error, qr/is active/, 'Error is about TSF being active' );
 
-  $tsf->clear_script;
+  $script->clear_script;
   undef $error;
-  try { $tsf->add_script( {} ) } catch { $error = $_ };
+  try { $script->add_script( {} ) } catch { $error = $_ };
   note $error;
   isnt( $error, undef, 'Error adding anything but an ArrayRef script items' );
   like( $error, qr/requires an ArrayRef/, 'Error refers to an ArrayRef' );
