@@ -124,6 +124,10 @@ render(self, samples)
     int samples
   CODE:
     int slen = samples * sizeof(short);
+    if ( slen == 0 )
+    {
+      XSRETURN_PV("");
+    }
     RETVAL = newSV(slen);
     SvCUR_set(RETVAL,  slen);
     SvPOK_only(RETVAL);
