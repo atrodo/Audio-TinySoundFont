@@ -43,48 +43,48 @@ use Try::Tiny;
     },
   );
 
-  my $script = $tsf->new_script([@script_a]);
-  is( scalar @{ $script->play_script }, 2,     'new with items did add items' );
+  my $script = $tsf->new_script( [@script_a] );
+  is( scalar @{ $script->play_script }, 2, 'new with items did add items' );
   isnt( $script->play_script->[0], $script_a[0], 'play_script[0] is not a ref to the original' );
   isnt( $script->play_script->[1], $script_a[1], 'play_script[1] is not a ref to the original' );
 
   $script = $tsf->new_script;
-  is( scalar @{ $script->play_script }, 0,     'new without items did not add items' );
+  is( scalar @{ $script->play_script }, 0, 'new without items did not add items' );
 
   my $error;
-  try { $script->set_script( [] ) } catch { $error = $_ };
-  is( $error,                        undef, 'set_script with empty script without error' );
-  is( scalar @{ $script->play_script }, 0,     'set_script did not add items' );
+  try { $script->set( [] ) } catch { $error = $_ };
+  is( $error,                           undef, 'set with empty script without error' );
+  is( scalar @{ $script->play_script }, 0,     'set did not add items' );
 
-  try { $script->set_script( [@script_a] ) } catch { $error = $_ };
-  is( $error,                        undef, 'set_script with simple script without error' );
-  is( scalar @{ $script->play_script }, 2,     'set_script did not add items' );
+  try { $script->set( [@script_a] ) } catch { $error = $_ };
+  is( $error,                           undef, 'set with simple script without error' );
+  is( scalar @{ $script->play_script }, 2,     'set did not add items' );
 
-  try { $script->add_script( [@script_b] ) } catch { $error = $_ };
-  is( $error,                        undef, 'add_script with simple script without error' );
-  is( scalar @{ $script->play_script }, 4,     'add_script added items' );
+  try { $script->add( [@script_b] ) } catch { $error = $_ };
+  is( $error,                           undef, 'add with simple script without error' );
+  is( scalar @{ $script->play_script }, 4,     'add added items' );
 
   isnt( $script->play_script->[0], $script_a[0], 'play_script[0] is not a ref to the original' );
   isnt( $script->play_script->[1], $script_a[1], 'play_script[1] is not a ref to the original' );
   isnt( $script->play_script->[2], $script_a[2], 'play_script[2] is not a ref to the original' );
   isnt( $script->play_script->[3], $script_a[3], 'play_script[3] is not a ref to the original' );
 
-  try { $script->clear_script } catch { $error = $_ };
-  is( $error,                        undef, 'clear_script with simple script without error' );
-  is( scalar @{ $script->play_script }, 0,     'clear_script cleared items' );
+  try { $script->clear } catch { $error = $_ };
+  is( $error,                           undef, 'clear with simple script without error' );
+  is( scalar @{ $script->play_script }, 0,     'clear cleared items' );
 
-  $script->add_script( [@script_a] );
-  $script->add_script( [@script_b] );
-  $script->add_script( [@script_c] );
-  is( scalar @{ $script->play_script }, 5, 'add_script added items' );
+  $script->add( [@script_a] );
+  $script->add( [@script_b] );
+  $script->add( [@script_c] );
+  is( scalar @{ $script->play_script }, 5, 'add added items' );
 
-  my $all_snd = $script->render_script;
-  is( scalar @{ $script->play_script }, 5, 'render_script did not remove items' );
-  is( $tsf->active_voices,           0, 'render_script ends with no active voices' );
+  my $all_snd = $script->render;
+  is( scalar @{ $script->play_script }, 5, 'render did not remove items' );
+  is( $tsf->active_voices,              0, 'render ends with no active voices' );
 
-  $script->clear_script;
-  $script->add_script( [@script_c] );
-  my $c_snd = $script->render_script;
+  $script->clear;
+  $script->add( [@script_c] );
+  my $c_snd = $script->render;
 
   is( length $all_snd, length $c_snd, 'Using the last script item only produces an identical length' );
 }
@@ -95,28 +95,31 @@ use Try::Tiny;
   my $script = $tsf->new_script( [ { preset => '' } ] );
   $tsf->note_on('');
   my $error;
-  my $snd = try { $script->render_script } catch { $error = $_; undef };
-  is( $snd, undef, 'A render_script when there are active voices fails' );
+  my $snd = try { $script->render } catch { $error = $_; undef };
+  is( $snd, undef, 'A render when there are active voices fails' );
   like( $error, qr/is active/, 'Error is about TSF being active' );
 
-  $script->clear_script;
+  $script->clear;
   undef $error;
-  try { $script->add_script( {} ) } catch { $error = $_ };
+  try { $script->add( {} ) } catch { $error = $_ };
   note $error;
   isnt( $error, undef, 'Error adding anything but an ArrayRef script items' );
   like( $error, qr/requires an ArrayRef/, 'Error refers to an ArrayRef' );
 
   undef $error;
-  my $playscript_tsf
-      = try { Audio::TinySoundFont->new( "$Bin/tiny.sf2", play_script => [] ) } catch { $error = $_; undef };
+  my $playscript_tsf = try { $tsf->new_script( [] ) } catch { $error = $_; undef };
   isnt( $playscript_tsf, undef, 'Trying to add a play_script at construction works' );
 
   undef $error;
-  my $error_tsf = try { Audio::TinySoundFont->new( "$Bin/tiny.sf2", play_script => {} ) } catch { $error = $_; undef };
-  is( $error_tsf, undef, 'Trying to add an non-ArrayRef play_script at construction does not works' );
+  my $error_tsf = try { $tsf->new_script( {} ) } catch { $error = $_; undef };
+  isnt( $error_tsf, undef, 'Trying to add single HashRef at construction does works' );
+
+  undef $error;
+  my $error_tsf = try { $tsf->new_script( preset => '' ) } catch { $error = $_; undef };
+  is( $error_tsf, undef, 'Trying to add a non-ArrayRef/HashRef play_script at construction fails' );
   note $error;
-  isnt( $error, undef, 'Got an error trying to set non-ArrayRef play_script' );
-  like( $error, qr/requires an ArrayRef/, 'Error refers to an ArrayRef' );
+  isnt( $error, undef, 'Got an error trying to set non-ArrayRef/HashRef play_script' );
+  like( $error, qr/must be a HashRef/, 'Error refers to an HashRef' );
 }
 
 done_testing;

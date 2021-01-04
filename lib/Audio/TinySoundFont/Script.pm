@@ -34,7 +34,7 @@ sub _coerce_play_script
   my @result;
   foreach my $item (@$new_script)
   {
-    carp "Script items must be a HashRef, not: " . ref $item
+    croak "Script items must be a HashRef, not: " . ref $item
         if ref $item ne 'HASH';
 
     push @result, {
@@ -92,7 +92,7 @@ sub render
   my $result = '';
 
   croak "Cannot process play_script when TinySoundFont is active"
-      if $self->is_active;
+      if $self->soundfont->is_active;
 
   # Create a specialized structure to create a rendering:
   # [ timestamp, fn, preset, note, vel ]
@@ -113,12 +113,13 @@ sub render
   @insrs = sort { $a->[0] <=> $b->[0] } @insrs;
 
   my $current_ts = 0;
-  my $tsf        = $self->soundfont->_tsf;
+  my $soundfont = $self->soundfont;
+  my $tsf        = $soundfont->_tsf;
   foreach my $i ( 0 .. $#insrs )
   {
     my ( $ts, $fn, @args ) = @{ $insrs[$i] };
     $result .= $tsf->render( $ts - $current_ts );
-    $self->$fn(@args);
+    $soundfont->$fn(@args);
     $current_ts = $ts;
   }
 
@@ -126,7 +127,7 @@ sub render
   for ( 1 .. 256 )
   {
     last
-        if !$self->is_active;
+        if !$tsf->active_voices;
     $result .= $tsf->render($cleanup_samples);
   }
 
