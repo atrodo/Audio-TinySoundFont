@@ -25,8 +25,9 @@ has index => (
 has name => (
   is      => 'ro',
   isa     => Str,
-  lazy => 1,
-  builder => sub {
+  lazy    => 1,
+  builder => sub
+  {
     my $self = shift;
     $self->soundfont->_tsf->get_presetname( $self->index ) // '';
   },

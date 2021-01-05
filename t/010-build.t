@@ -69,4 +69,19 @@ $sf2_fh->seek( 0, 0 );
   is( $tsf, undef, 'Cannot create a new object from non-existant file' );
 }
 
+# Invalid file
+{
+  my $invalid = __FILE__;
+  my $tsf = try { Audio::TinySoundFont->new($invalid) } catch { note $_ ; undef };
+
+  is( $tsf, undef, 'Cannot create a new object from non-existant file' );
+}
+
+# Invalid string
+{
+  my $tsf = try { Audio::TinySoundFont->new(\'') } catch { note $_ ; undef };
+
+  is( $tsf, undef, 'Cannot create a new object from non-existant file' );
+}
+
 done_testing;
