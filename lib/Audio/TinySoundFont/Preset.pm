@@ -47,17 +47,7 @@ sub render
   my $samples = ( $seconds * $SR ) || $args{samples} // $SR;
   my $note    = $args{note} // 60;
   my $vel     = $args{vel} // 0.5;
-  my $vol     = $args{volume};
-
-  if ( !defined $vol && defined $args{db} )
-  {
-    # Volume is a float 0.0-1.0, db is in dB -100..0, so adjust it to a float
-    my $db
-        = $args{db} > 0    ? 0
-        : $args{db} < -100 ? -100
-        :                    $args{db};
-    $vol = 10**( $db / 20 );
-  }
+  my $vol     = $args{volume} // $self->soundfont->db_to_vol($args{db});
 
   my $old_vol;
   if ( defined $vol )
@@ -109,6 +99,7 @@ sub render
   {
     $self->soundfont->volume($old_vol);
   }
+
   return $result;
 }
 
