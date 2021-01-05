@@ -1,4 +1,4 @@
-package Audio::TinySoundFont::Script;
+package Audio::TinySoundFont::Builder;
 
 use v5.14;
 use warnings;

@@ -14,7 +14,7 @@ use Types::Standard qw/ArrayRef HashRef GlobRef Str Int Num InstanceOf/;
 
 use Audio::TinySoundFont::XS;
 use Audio::TinySoundFont::Preset;
-use Audio::TinySoundFont::Script;
+use Audio::TinySoundFont::Builder;
 
 has _tsf => (
   is       => 'ro',
@@ -136,6 +136,22 @@ sub preset_index
   return Audio::TinySoundFont::Preset->new(
     soundfont => $self,
     index     => $index,
+  );
+}
+
+sub new_builder
+{
+  my $self   = shift;
+  my @script = @_;
+
+  if ( @script == 1 && ref $script[0] eq 'ARRAY' )
+  {
+    @script = @{ $script[0] };
+  }
+
+  return Audio::TinySoundFont::Builder->new(
+    soundfont   => $self,
+    play_script => \@script,
   );
 }
 
