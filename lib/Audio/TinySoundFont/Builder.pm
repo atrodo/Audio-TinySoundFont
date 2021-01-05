@@ -86,6 +86,16 @@ sub add
 sub render
 {
   my $self = shift;
+  my %args = @_;
+
+  my $vol = $args{volume} // $self->soundfont->db_to_vol( $args{db} );
+
+  my $old_vol;
+  if ( defined $vol )
+  {
+    $old_vol = $self->soundfont->volume;
+    $self->soundfont->volume($vol);
+  }
 
   my $script = $self->play_script;
   my $SR     = $self->SAMPLE_RATE;
@@ -113,7 +123,7 @@ sub render
   @insrs = sort { $a->[0] <=> $b->[0] } @insrs;
 
   my $current_ts = 0;
-  my $soundfont = $self->soundfont;
+  my $soundfont  = $self->soundfont;
   my $tsf        = $soundfont->_tsf;
   foreach my $i ( 0 .. $#insrs )
   {
@@ -129,6 +139,11 @@ sub render
     last
         if !$tsf->active_voices;
     $result .= $tsf->render($cleanup_samples);
+  }
+
+  if ( defined $old_vol )
+  {
+    $self->soundfont->volume($old_vol);
   }
 
   return $result;

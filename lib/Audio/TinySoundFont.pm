@@ -216,6 +216,22 @@ sub render
   return $tsf->render($samples);
 }
 
+sub db_to_vol
+{
+  my $self = shift;
+  my $db   = shift;
+
+  return
+    if !defined $db;
+
+  # Volume is a float 0.0-1.0, db is in dB -100..0, so adjust it to a float
+  $db
+      = $db > 0    ? 0
+      : $db < -100 ? -100
+      :              $db;
+  return 10**( $db / 20 );
+}
+
 1;
 __END__
 
