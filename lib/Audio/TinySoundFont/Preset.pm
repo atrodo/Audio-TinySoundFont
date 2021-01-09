@@ -104,6 +104,13 @@ sub render
   return $result;
 }
 
+sub render_unpack
+{
+  my $self = shift;
+
+  return unpack('s<*', $self->render(@_) );
+}
+
 1;
 __END__
 

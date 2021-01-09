@@ -216,6 +216,13 @@ sub render
   return $tsf->render($samples);
 }
 
+sub render_unpack
+{
+  my $self = shift;
+
+  return unpack('s<*', $self->render(@_) );
+}
+
 sub db_to_vol
 {
   my $self = shift;
