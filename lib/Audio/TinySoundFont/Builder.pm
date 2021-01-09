@@ -116,8 +116,8 @@ sub render
       $at *= $SR;
       $to *= $SR;
     }
-    push @insrs, [ $at, 'note_on',  @$item{qw/preset note vel/} ];
-    push @insrs, [ $to, 'note_off', @$item{qw/preset note vel/} ];
+    push @insrs, [ int $at, 'note_on',  @$item{qw/preset note vel/} ];
+    push @insrs, [ int $to, 'note_off', @$item{qw/preset note vel/} ];
   }
 
   @insrs = sort { $a->[0] <=> $b->[0] } @insrs;
