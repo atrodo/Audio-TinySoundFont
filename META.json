@@ -1,10 +1,10 @@
 {
-   "abstract" : "Blah blah blah",
+   "abstract" : "Interface to TinySoundFont, a \"SoundFont2 synthesizer library in a single C/C++ file\"",
    "author" : [
       "Jon Gentle <cpan@atrodo.org>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Dist::Zilla version 5.041, Dist::Milla version v1.0.15, CPAN::Meta::Converter version 2.150005",
+   "generated_by" : "Dist::Milla version v1.0.20, Dist::Zilla version 6.017, CPAN::Meta::Converter version 2.150010",
    "license" : [
       "artistic_2"
    ],
@@ -31,12 +31,16 @@
       },
       "develop" : {
          "requires" : {
-            "Dist::Milla" : "v1.0.15",
+            "Dist::Milla" : "v1.0.20",
             "Test::Pod" : "1.41"
          }
       },
       "runtime" : {
          "requires" : {
+            "Moo" : "2.000",
+            "Try::Tiny" : "0",
+            "Types::Standard" : "0",
+            "autodie" : "0",
             "perl" : "5.014000"
          }
       },
@@ -47,9 +51,24 @@
       }
    },
    "release_status" : "stable",
-   "version" : "0.01",
+   "resources" : {
+      "bugtracker" : {
+         "web" : "https://github.com/atrodo/Audio-TinySoundFont/issues"
+      },
+      "homepage" : "https://github.com/atrodo/Audio-TinySoundFont",
+      "repository" : {
+         "type" : "git",
+         "url" : "https://github.com/atrodo/Audio-TinySoundFont.git",
+         "web" : "https://github.com/atrodo/Audio-TinySoundFont"
+      }
+   },
+   "version" : "0.10",
    "x_contributors" : [
       "Jon Gentle <atrodo@atrodo.org>"
-   ]
+   ],
+   "x_generated_by_perl" : "v5.18.2",
+   "x_serialization_backend" : "Cpanel::JSON::XS version 4.25",
+   "x_spdx_expression" : "Artistic-2.0",
+   "x_static_install" : 0
 }
 
