@@ -153,7 +153,7 @@ sub render_unpack
 {
   my $self = shift;
 
-  return unpack('s<*', $self->render(@_) );
+  return unpack( 's<*', $self->render(@_) );
 }
 
 1;

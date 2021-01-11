@@ -48,7 +48,7 @@ sub render
   my $samples = ( $seconds * $SR ) || $args{samples} // $SR;
   my $note    = $args{note} // 60;
   my $vel     = $args{vel} // 0.5;
-  my $vol     = $args{volume} // $self->soundfont->db_to_vol($args{db});
+  my $vol     = $args{volume} // $self->soundfont->db_to_vol( $args{db} );
 
   my $old_vol;
   if ( defined $vol )
@@ -108,7 +108,7 @@ sub render_unpack
 {
   my $self = shift;
 
-  return unpack('s<*', $self->render(@_) );
+  return unpack( 's<*', $self->render(@_) );
 }
 
 1;

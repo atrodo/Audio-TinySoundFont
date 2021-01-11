@@ -220,7 +220,7 @@ sub render_unpack
 {
   my $self = shift;
 
-  return unpack('s<*', $self->render(@_) );
+  return unpack( 's<*', $self->render(@_) );
 }
 
 sub db_to_vol
@@ -229,7 +229,7 @@ sub db_to_vol
   my $db   = shift;
 
   return
-    if !defined $db;
+      if !defined $db;
 
   # Volume is a float 0.0-1.0, db is in dB -100..0, so adjust it to a float
   $db
