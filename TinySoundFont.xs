@@ -60,7 +60,7 @@ load_fh(CLASS, fh)
     RETVAL = tsf_load(&stream);
     if ( RETVAL == NULL )
     {
-      croak("Unable to load: %s\n", fh);
+      croak("Unable to load: %p\n", fh);
     }
     tsf_set_output(RETVAL, TSF_MONO, SAMPLE_RATE, -10);
   OUTPUT:
