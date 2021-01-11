@@ -118,7 +118,7 @@ __END__
 
 =head1 NAME
 
-Audio::TinySoundFont::Preset - SoundFont Preset that can be used to make music
+Audio::TinySoundFont::Preset - SoundFont Preset Represntation
 
 =head1 SYNOPSIS
 
@@ -145,15 +145,18 @@ The L<Audio::TinySoundFont> object that this Preset object was created from.
 
 =head2 index
 
-The index of this preset in the soundfont file.
+The index of this preset in the SoundFont file.
 
 =head2 name
 
-The name of the preset. For example, it could be "Clarinet", "Accordian", "Standard Drums" or "Sine Wave".
+The name of the preset. For example, it could be "Clarinet", "Accordion",
+"Standard Drums" or "Sine Wave".
 
-=head2 render(%options)
+=head2 render
 
-Render generates a string of 16-bit, little endian sound samples for this
+  my $samples = $preset->render(%options);
+
+Returns a string of 16-bit, little endian sound samples for this
 preset using TinySoundFont. The result can be unpacked using C<unpack("s<*")>
 or you can call L</render_unpack> function to get an array instead. It accepts
 several options that allow you to customize how the sound should be generated.
@@ -171,7 +174,7 @@ This sets how long the preset should be played for, from Attack to Release.
 It defaults to 1 second. If both L</seconds> and L</samples> are given,
 seconds will be used.
 
-NOTE: The sample is not contrained to the number of seconds given, it is the
+NOTE: The sample is not constrained to the number of seconds given, it is the
 minimum number of seconds that will be returned. The sound may continue to
 play after these many seconds, and often will, because of the decay phase
 of the SoundFont.
@@ -183,7 +186,7 @@ from Attack to Release, measure in 16-bit samples. It defaults to 1 second
 worth of samples. If both L</seconds> and L</samples> are given, seconds will
 be used.
 
-NOTE: The sample is not contrained to the number of samples given, it is the
+NOTE: The sample is not constrained to the number of samples given, it is the
 minimum number of samples that will be returned. The sound may continue to
 play after these many samples, and often will, because of the decay phase
 of the SoundFont.
@@ -198,7 +201,7 @@ default. It is an integer between 0 and 127.
 The MIDI velocity of the note played, expressed as a float between 0 and 1,
 the default is 0.5. Generally a velocity causes a louder noise to be played,
 but the SoundFont can use it modify other aspects of the sound. This is
-seperate from L</volume> which controls the general volume of the resulting
+separate from L</volume> which controls the general volume of the resulting
 sample.
 
 =item volume
@@ -209,10 +212,17 @@ If both L</volume> and L</db> are given, volume will be used.
 =item db
 
 The volume of the sample, expressed in as a dB float between -100 and 0, with
--100 being equvalent to silent and 0 being as loud as TinySoundFont can go.
+-100 being equivalent to silent and 0 being as loud as TinySoundFont can go.
 If both L</volume> and L</db> are given, volume will be used.
 
 =back
+
+=head2 render_unpack
+
+  my @samples = $preset->render_unpack(%options);
+
+Returns an array of of 16-bit sound samples for this preset using TinySoundFont.
+All of the options are identical to L</render>.
 
 =head1 AUTHOR
 

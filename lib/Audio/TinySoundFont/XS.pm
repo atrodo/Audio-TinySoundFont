@@ -16,15 +16,11 @@ __END__
 
 =head1 NAME
 
-Audio::TinySoundFont - Blah blah blah
-
-=head1 SYNOPSIS
-
-  use Audio::TinySoundFont;
+Audio::TinySoundFont::XS - XS interface to TinySoundFont.
 
 =head1 DESCRIPTION
 
-Audio::TinySoundFont is
+No user-serviceable parts, see L<Audio::TinySoundFont>
 
 =head1 AUTHOR
 
@@ -39,5 +35,7 @@ Copyright 2020- Jon Gentle
 This is free software. You may redistribute copies of it under the terms of the Artistic License 2 as published by The Perl Foundation.
 
 =head1 SEE ALSO
+
+L<Audio::TinySoundFont>, L<TinySoundFont|https://github.com/schellingb/TinySoundFont>
 
 =cut
